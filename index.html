@@ -1,17 +1,633 @@
-<!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Business Entrepreneur — Hub d'Accélération de Carrière. Traffic Manager IA, Business Analyst, TikTok Shop." />
-    <title>Business Entrepreneur — Pilote ta carrière</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+import { useState, useEffect, useRef } from 'react'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
+import {
+  Menu, X, ArrowRight, ChevronRight, Star, Users, Zap,
+  CheckCircle2, TrendingUp, Brain, ShoppingBag, BarChart3,
+  Globe, Target, ExternalLink
+} from 'lucide-react'
+
+function LogoBE({ size = 36 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="19" stroke="white" strokeWidth="1.5"/>
+      <rect x="10" y="13" width="2.5" height="14" rx="1.2" fill="#FF6400"/>
+      <rect x="10" y="13" width="8.5" height="2.8" rx="1.2" fill="#FF6400"/>
+      <rect x="10" y="18.6" width="7" height="2.8" rx="1.2" fill="#FF6400"/>
+      <rect x="10" y="24.2" width="8.5" height="2.8" rx="1.2" fill="#FF6400"/>
+      <rect x="21" y="13" width="2.5" height="14" rx="1.2" fill="white"/>
+      <path d="M21 13h5.5a3.5 3.5 0 010 7H21z" fill="white"/>
+      <path d="M21 20h6a3.5 3.5 0 010 7H21z" fill="white"/>
+    </svg>
+  )
+}
+
+function FI({ children, className = '', delay = 0 }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+  return (
+    <motion.div ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >{children}</motion.div>
+  )
+}
+
+function Nav() {
+  const [scrolled, setScrolled] = useState(false)
+  const [open, setOpen] = useState(false)
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 30)
+    window.addEventListener('scroll', fn)
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
+
+  const links = [
+    { l: 'Formations', h: '#formations' },
+    { l: 'Résultats', h: 'https://business-entrepreneur.fr/resultats', ext: true },
+    { l: 'Test profil 🧭', h: 'https://www.profil-business-entrepreneur.fr/', ext: true },
+    { l: 'Blog', h: 'https://business-entrepreneur.fr/blog', ext: true },
+    { l: 'À propos', h: 'https://business-entrepreneur.fr/a-propos', ext: true },
+  ]
+
+  return (
+    <motion.nav initial={{ y: -70, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-xl shadow-2xl' : ''}`}
+      style={{ backgroundColor: scrolled ? 'rgba(42,8,64,0.92)' : 'transparent', borderBottom: scrolled ? '1px solid rgba(255,255,255,0.07)' : 'none' }}>
+      <div className="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
+        <a href="#" className="flex items-center gap-2.5 flex-shrink-0">
+          <LogoBE size={36} />
+          <span className="font-bold text-white text-sm tracking-wide leading-tight hidden sm:block"
+            style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            Business<br /><span style={{ color: '#FF6400' }}>Entrepreneur</span>
+          </span>
+        </a>
+
+        <div className="hidden lg:flex items-center gap-7">
+          {links.map(({ l, h, ext }) => (
+            <a key={l} href={h} target={ext ? '_blank' : undefined} rel={ext ? 'noopener noreferrer' : undefined}
+              className="text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+              style={{ color: 'rgba(255,255,255,0.65)' }}
+              onMouseEnter={e => e.target.style.color = 'white'}
+              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.65)'}
+            >{l}</a>
+          ))}
+        </div>
+
+        <a href="https://calendly.com/business-entrepreneur/appel-accompagnement-perso"
+          target="_blank" rel="noopener noreferrer"
+          className="hidden lg:flex items-center gap-2 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-all duration-200 hover:opacity-90 hover:-translate-y-px"
+          style={{ backgroundColor: '#FF6400', boxShadow: '0 4px 16px rgba(255,100,0,0.4)' }}>
+          Rejoindre BE
+        </a>
+
+        <button onClick={() => setOpen(!open)} className="lg:hidden text-white p-1">
+          {open ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            style={{ backgroundColor: 'rgba(42,8,64,0.97)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="px-5 py-5 flex flex-col gap-4">
+              {links.map(({ l, h, ext }) => (
+                <a key={l} href={h} target={ext ? '_blank' : undefined} rel={ext ? 'noopener noreferrer' : undefined}
+                  onClick={() => setOpen(false)} className="text-white/80 hover:text-white text-base font-medium">{l}</a>
+              ))}
+              <a href="https://calendly.com/business-entrepreneur/appel-accompagnement-perso" target="_blank" rel="noopener noreferrer"
+                className="text-white text-sm font-bold px-5 py-3 rounded-lg text-center mt-1"
+                style={{ backgroundColor: '#FF6400' }}>Rejoindre BE</a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
+  )
+}
+
+function Hero() {
+  const stats = [
+    { v: '+10 000', l: 'Professionnels lancés' },
+    { v: '+15M€', l: 'Générés par la communauté' },
+    { v: '4', l: 'Formations actives' },
+    { v: '100%', l: 'Accompagnement jusqu\'au lancement' },
+  ]
+  return (
+    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-16"
+      style={{ background: 'linear-gradient(155deg, #3a0950 0%, #2a0840 45%, #1a0530 100%)' }}>
+      <div className="absolute inset-0 opacity-[0.035]"
+        style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px)', backgroundSize: '48px 48px' }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] rounded-full opacity-15 blur-[100px] pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse, #FF6400 0%, transparent 70%)' }} />
+
+      <div className="relative z-10 max-w-5xl mx-auto px-5 py-24 text-center">
+        <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} className="flex flex-col items-center gap-7">
+
+          <span className="inline-flex items-center gap-2 border text-xs font-semibold px-4 py-2 rounded-full"
+            style={{ borderColor: 'rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#FF6400' }} />
+            FORMATION FREELANCE DIGITAL &amp; ENTREPRENEURIAT
+          </span>
+
+          <h1 className="font-black text-white leading-[1.06] tracking-tight max-w-4xl"
+            style={{ fontSize: 'clamp(2.2rem, 5.5vw, 4rem)', fontFamily: 'Montserrat, sans-serif' }}>
+            Les talents ambitieux ne subissent plus le marché du travail.{' '}
+            <span style={{ color: '#FF6400' }}>Ils le pilotent.</span>
+          </h1>
+
+          <p style={{ color: 'rgba(255,255,255,0.58)' }} className="max-w-2xl leading-relaxed text-lg">
+            Business Entrepreneur ne forme pas des étudiants. Nous accompagnons de A à Z des profils ambitieux jusqu'au lancement réel de leur activité.{' '}
+            <span style={{ color: 'rgba(255,255,255,0.88)' }}>Formation terrain — accompagnement complet — communauté sélective.</span>
+          </p>
+
+          <div className="flex flex-wrap gap-3 justify-center mt-1">
+            <a href="https://calendly.com/business-entrepreneur/appel-accompagnement-perso" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 text-white font-bold px-8 py-4 rounded-xl text-sm transition-all duration-200 hover:-translate-y-1"
+              style={{ backgroundColor: '#FF6400', boxShadow: '0 8px 28px rgba(255,100,0,0.45)', fontFamily: 'Montserrat, sans-serif' }}>
+              Réserver un appel gratuit <ArrowRight size={16} />
+            </a>
+            <a href="#formations"
+              className="flex items-center gap-2 text-white font-bold px-8 py-4 rounded-xl text-sm transition-all duration-200 hover:bg-white/10"
+              style={{ border: '2px solid rgba(255,255,255,0.22)', backgroundColor: 'rgba(255,255,255,0.05)', fontFamily: 'Montserrat, sans-serif' }}>
+              Voir les formations <ChevronRight size={16} />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-8 pt-8 w-full max-w-3xl"
+            style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            {stats.map(({ v, l }) => (
+              <div key={l} className="flex flex-col items-center gap-1">
+                <span className="font-black text-2xl sm:text-3xl leading-none" style={{ color: '#FF6400', fontFamily: 'Montserrat, sans-serif' }}>{v}</span>
+                <span className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.38)' }}>{l}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function Mission() {
+  return (
+    <section className="bg-[#F9F7F2] py-24">
+      <div className="max-w-6xl mx-auto px-5">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <FI>
+            <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: '#FF6400' }}>Notre mission</p>
+            <h2 className="font-black text-[#1a1a1a] leading-tight mb-5"
+              style={{ fontSize: 'clamp(1.7rem, 3vw, 2.5rem)', fontFamily: 'Montserrat, sans-serif' }}>
+              Former, accompagner, lancer.<br />Jusqu'à être opérationnel.
+            </h2>
+            <p className="text-gray-500 leading-relaxed mb-7 text-sm">
+              Nous accompagnons de A à Z des profils ambitieux jusqu'au lancement réel de leur activité. Formation terrain — accompagnement complet — communauté sélective : un modèle que personne d'autre ne propose.
+            </p>
+            {[
+              'Nous ne formons pas des apprenants — nous lançons des professionnels',
+              'On ne lâche pas à la fin du module — on reste jusqu\'à l\'opérationnel',
+              '+10 000 profils transformés, +15M€ générés par la communauté',
+            ].map(t => (
+              <div key={t} className="flex items-start gap-3 mb-3.5">
+                <CheckCircle2 size={17} className="flex-shrink-0 mt-0.5" style={{ color: '#FF6400' }} />
+                <span className="text-gray-600 text-sm">{t}</span>
+              </div>
+            ))}
+            <a href="#formations"
+              className="inline-flex items-center gap-2 text-white font-bold px-6 py-3.5 rounded-xl text-sm mt-6 transition-all hover:-translate-y-px"
+              style={{ backgroundColor: '#FF6400', boxShadow: '0 6px 20px rgba(255,100,0,0.35)', fontFamily: 'Montserrat, sans-serif' }}>
+              Découvrir les formations <ArrowRight size={15} />
+            </a>
+          </FI>
+
+          <FI delay={0.15}>
+            <div className="flex flex-col gap-4">
+              <blockquote className="rounded-2xl p-7 text-white"
+                style={{ background: 'linear-gradient(135deg, #3a0950, #1e062e)' }}>
+                <p className="text-white/85 leading-relaxed italic text-base">
+                  "Tu peux avoir du talent, de la motivation, et quand même stagner. Pas parce que tu manques de volonté. Parce que personne ne t'a donné les bonnes compétences au bon moment."
+                </p>
+                <p className="text-white/40 text-xs mt-4">— Najib, Fondateur Business Entrepreneur</p>
+              </blockquote>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { v: '+10 000', l: 'Professionnels lancés', icon: Users },
+                  { v: '+15M€', l: 'Générés', icon: TrendingUp },
+                  { v: '100%', l: 'Jusqu\'au lancement', icon: Target },
+                ].map(({ v, l, icon: Icon }) => (
+                  <div key={l} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-2">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#3a0950' }}>
+                      <Icon size={16} className="text-white" />
+                    </div>
+                    <div className="font-black text-xl leading-none" style={{ color: '#FF6400', fontFamily: 'Montserrat, sans-serif' }}>{v}</div>
+                    <div className="text-gray-400 text-xs leading-snug">{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FI>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Formations() {
+  const fms = [
+    {
+      tag: 'Formation Phare', badge: '1er client en ~6 semaines', color: '#FF6400', bg: '#fff5ef',
+      icon: Globe, title: 'Traffic Manager IA',
+      desc: 'Pilotez des campagnes publicitaires IA sur Meta, TikTok, Google. En moyenne, nos apprenants trouvent leur 1er client en 6 semaines — pendant la formation.',
+      pts: ['Meta Ads & TikTok Ads', 'IA pour l\'optimisation', '1er client pendant la formation', 'Accompagnement jusqu\'au lancement'],
+    },
+    {
+      tag: 'E-Commerce', badge: 'Sourcing Chine inclus', color: '#9333ea', bg: '#faf5ff',
+      icon: ShoppingBag, title: 'TikTok Shop',
+      desc: 'Sélection produit, sourcing, création vidéo, gestion boutique. On vous aide à sourcer les meilleurs produits — quitte à nous déplacer nous-mêmes en Chine.',
+      pts: ['Sélection & sourcing produit', 'Déplacement Chine si nécessaire', 'Création vidéo TikTok', 'Gestion boutique complète'],
+    },
+    {
+      tag: 'BizDev', badge: 'Compétences complètes', color: '#0891b2', bg: '#f0f9ff',
+      icon: Users, title: 'Business Developer',
+      desc: 'Setting, closing, prospection, pub digitale. Le métier qui combine toutes les compétences du digital. Vous développez commercialement l\'activité de partenaires.',
+      pts: ['Setting & Closing', 'Prospection LinkedIn & TikTok', 'Publicité digitale', 'Commission sur ventes'],
+    },
+    {
+      tag: 'Data', badge: 'Experte dédiée', color: '#059669', bg: '#f0fdf4',
+      icon: BarChart3, title: 'Business Analyst',
+      desc: 'Lecture de données, dashboards Power BI, modélisation. Une vraie experte accompagne chaque apprenant. Métier technique, discret, très recherché.',
+      pts: ['Power BI & Excel avancé', 'Dashboards & reporting', 'Experte dédiée par apprenant', 'Métier très demandé'],
+    },
+    {
+      tag: 'Bonus IA', badge: 'Inclus formations', color: '#d97706', bg: '#fffbeb',
+      icon: Brain, title: 'IA & Lovable',
+      desc: 'Créez landing pages et outils digitaux sans code avec Lovable IA. Des apprenants génèrent des ventes uniquement avec ces formations bonus, dès les premières semaines.',
+      pts: ['Lovable IA sans code', 'Landing pages pro', 'Ventes dès la 1ère semaine', 'Compétence rare & demandée'],
+    },
+  ]
+
+  return (
+    <section id="formations" className="py-24" style={{ background: 'linear-gradient(180deg, #2a0840 0%, #1a0530 100%)' }}>
+      <div className="max-w-6xl mx-auto px-5">
+        <FI className="text-center mb-14">
+          <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#FF6400' }}>
+            Des compétences à forte valeur
+          </p>
+          <h2 className="font-black text-white leading-tight mb-4"
+            style={{ fontSize: 'clamp(1.8rem, 3.8vw, 3rem)', fontFamily: 'Montserrat, sans-serif' }}>
+            Pas de la théorie. De vraies carrières.
+          </h2>
+          <p className="max-w-xl mx-auto text-base" style={{ color: 'rgba(255,255,255,0.48)' }}>
+            Chaque formation est construite autour d'un seul objectif : vous rendre opérationnel et générateur de revenus.
+          </p>
+        </FI>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {fms.map((f, i) => (
+            <FI key={f.title} delay={i * 0.08}>
+              <div className="bg-white rounded-2xl p-6 shadow-lg flex flex-col gap-5 h-full border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold px-3 py-1.5 rounded-full" style={{ color: f.color, backgroundColor: f.bg }}>{f.tag}</span>
+                  <span className="text-xs font-medium text-white px-3 py-1.5 rounded-full" style={{ backgroundColor: f.color }}>{f.badge}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white flex-shrink-0" style={{ backgroundColor: f.color }}>
+                    <f.icon size={20} />
+                  </div>
+                  <h3 className="font-black text-[#1a1a1a] text-lg leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>{f.title}</h3>
+                </div>
+                <p className="text-gray-500 text-sm leading-relaxed flex-1">{f.desc}</p>
+                <ul className="flex flex-col gap-2">
+                  {f.pts.map(p => (
+                    <li key={p} className="flex items-center gap-2.5">
+                      <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: f.color }} />
+                      <span className="text-gray-600 text-xs">{p}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a href="https://calendly.com/business-entrepreneur/appel-accompagnement-perso" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 text-white font-bold text-sm py-3 px-5 rounded-xl transition-all hover:opacity-90 mt-auto"
+                  style={{ backgroundColor: '#1a1a1a' }}>
+                  Vérifier mon éligibilité <ArrowRight size={14} />
+                </a>
+              </div>
+            </FI>
+          ))}
+
+          <FI delay={0.4}>
+            <div className="rounded-2xl p-6 flex flex-col gap-5 h-full" style={{ border: '1px solid rgba(255,100,0,0.3)', background: 'linear-gradient(135deg, rgba(255,100,0,0.1), rgba(255,100,0,0.03))' }}>
+              <p className="text-xs font-bold tracking-widest uppercase" style={{ color: '#FF6400' }}>Pas sûr de votre voie ?</p>
+              <h3 className="font-black text-white text-xl leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Découvrez le métier digital fait pour vous.
+              </h3>
+              <p className="text-white/55 text-sm leading-relaxed flex-1">
+                60 questions · Rapport personnalisé 18 pages · Gratuit · 10 minutes. Déjà utilisé par +10 000 profils.
+              </p>
+              <a href="https://www.profil-business-entrepreneur.fr/" target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 text-white font-bold text-sm py-3.5 px-5 rounded-xl transition-all hover:opacity-90"
+                style={{ backgroundColor: '#FF6400', boxShadow: '0 6px 20px rgba(255,100,0,0.4)' }}>
+                Passer le test gratuit <ExternalLink size={14} />
+              </a>
+            </div>
+          </FI>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Modele() {
+  const steps = [
+    { n: '01', t: 'Éclaireur', d: 'Accueil & validation humaine. On identifie votre potentiel et vos objectifs avant tout engagement.' },
+    { n: '02', t: 'Formé', d: 'Compétences terrain & ROI. Chaque module orienté pratique, pas certification.' },
+    { n: '03', t: 'Accompagné', d: 'De A à Z jusqu\'au lancement. Coaching live, discord, suivi continu.' },
+    { n: '04', t: 'Connecté', d: 'Communauté active & partenaires. Entourez-vous de professionnels qui avancent.' },
+    { n: '05', t: 'Déployé', d: 'Mission PME & réseau partenaires. L\'équipe connecte aux opportunités réelles.' },
+  ]
+  return (
+    <section className="bg-[#F9F7F2] py-24">
+      <div className="max-w-6xl mx-auto px-5">
+        <FI className="text-center mb-12">
+          <h2 className="font-black text-[#1a1a1a] leading-tight mb-3"
+            style={{ fontSize: 'clamp(1.7rem, 3.2vw, 2.5rem)', fontFamily: 'Montserrat, sans-serif' }}>
+            Le modèle qui change tout.
+          </h2>
+          <p className="text-gray-400 max-w-xl mx-auto text-sm">
+            Pas un cours. Pas une certification. Un parcours de transformation de A à Z — de la compétence au lancement opérationnel.
+          </p>
+        </FI>
+        <div className="grid sm:grid-cols-5 gap-4">
+          {steps.map(({ n, t, d }, i) => (
+            <FI key={n} delay={i * 0.07}>
+              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col gap-2.5 h-full">
+                <span className="text-xs font-black" style={{ color: '#FF6400' }}>{n}</span>
+                <div className="font-black text-[#1a1a1a] text-base leading-snug" style={{ fontFamily: 'Montserrat, sans-serif' }}>{t}</div>
+                <p className="text-gray-400 text-xs leading-relaxed">{d}</p>
+              </div>
+            </FI>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Resultats() {
+  const testi = [
+    { i: 'JL', c: '#FF6400', title: 'Traffic Manager IA', sub: '1er client en 6 semaines', text: 'J\'ai trouvé mon premier client pendant la formation, avant même la fin du programme. L\'accompagnement live fait vraiment la différence — on n\'est jamais seul.' },
+    { i: 'SM', c: '#9333ea', title: 'TikTok Shop', sub: 'Sourcing Chine validé', text: 'L\'équipe BE s\'est impliquée pour valider notre sourcing. Ce niveau d\'engagement, je n\'avais jamais vu ça dans une formation. Mon shop génère des ventes régulières.' },
+    { i: 'KA', c: '#d97706', title: 'Lovable IA', sub: 'Revenu dès la 1ère semaine', text: 'Avec les formations bonus IA, j\'ai créé ma première landing page et signé un client en 5 jours. Ces bonus valent à eux seuls le prix de la formation.' },
+  ]
+  return (
+    <section className="py-24" style={{ background: 'linear-gradient(180deg, #1a0530 0%, #2a0840 100%)' }}>
+      <div className="max-w-6xl mx-auto px-5">
+        <FI className="text-center mb-12">
+          <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#FF6400' }}>Résultats réels</p>
+          <h2 className="font-black text-white leading-tight mb-3"
+            style={{ fontSize: 'clamp(1.8rem, 3.8vw, 3rem)', fontFamily: 'Montserrat, sans-serif' }}>
+            +10 000 personnes ont décidé<br /><span style={{ color: '#FF6400' }}>d'aller plus loin.</span>
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.45)' }}>Ce ne sont pas des promesses. Ce sont des transformations réelles, mesurées, documentées.</p>
+        </FI>
+        <div className="grid md:grid-cols-3 gap-5 mb-8">
+          {testi.map((t, i) => (
+            <FI key={t.i} delay={i * 0.1}>
+              <div className="rounded-2xl p-6 flex flex-col gap-4 h-full" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}>
+                <div className="flex gap-1">{[...Array(5)].map((_, j) => <Star key={j} size={13} fill="#FF6400" stroke="none" />)}</div>
+                <p className="text-sm leading-relaxed flex-1" style={{ color: 'rgba(255,255,255,0.78)' }}>"{t.text}"</p>
+                <div className="flex items-center gap-3 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-black flex-shrink-0" style={{ backgroundColor: t.c }}>{t.i}</div>
+                  <div>
+                    <div className="text-white text-xs font-semibold">{t.title}</div>
+                    <div className="text-xs" style={{ color: 'rgba(255,255,255,0.38)' }}>{t.sub}</div>
+                  </div>
+                </div>
+              </div>
+            </FI>
+          ))}
+        </div>
+        <FI className="text-center">
+          <a href="https://business-entrepreneur.fr/resultats" target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-medium text-sm px-6 py-3 rounded-xl hover:bg-white/8 transition-all"
+            style={{ border: '1px solid rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.7)' }}>
+            Voir tous les résultats <ExternalLink size={14} />
+          </a>
+        </FI>
+      </div>
+    </section>
+  )
+}
+
+function PontEntrepreneurial() {
+  return (
+    <section className="bg-[#F9F7F2] py-24">
+      <div className="max-w-6xl mx-auto px-5">
+        <FI className="text-center mb-12">
+          <h2 className="font-black text-[#1a1a1a] leading-tight" style={{ fontSize: 'clamp(1.7rem, 3.2vw, 2.5rem)', fontFamily: 'Montserrat, sans-serif' }}>
+            L'écosystème BE
+          </h2>
+        </FI>
+        <div className="grid md:grid-cols-2 gap-6">
+          <FI delay={0.1}>
+            <div className="rounded-2xl p-8 flex flex-col gap-5 h-full" style={{ background: 'linear-gradient(135deg, #3a0950, #1e062e)' }}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'rgba(255,100,0,0.18)' }}>
+                <Brain size={22} style={{ color: '#FF9A50' }} />
+              </div>
+              <div>
+                <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: '#FF6400' }}>Test psychométrique gratuit</p>
+                <h3 className="font-black text-white text-xl mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>Découvrez le métier digital fait pour vous.</h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.52)' }}>60 questions · Rapport personnalisé 18 pages · Gratuit · 10 minutes. Déjà utilisé par +10 000 profils.</p>
+              </div>
+              {['Profil DISC complet', '3 métiers recommandés avec score', 'Plan d\'action 90 jours personnalisé', 'Archétype entrepreneurial'].map(p => (
+                <div key={p} className="flex items-center gap-2.5">
+                  <CheckCircle2 size={14} style={{ color: '#FF6400' }} className="flex-shrink-0" />
+                  <span className="text-sm" style={{ color: 'rgba(255,255,255,0.68)' }}>{p}</span>
+                </div>
+              ))}
+              <a href="https://www.profil-business-entrepreneur.fr/" target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 text-white font-bold text-sm py-3.5 px-6 rounded-xl mt-auto transition-all hover:opacity-90"
+                style={{ backgroundColor: '#FF6400', boxShadow: '0 6px 20px rgba(255,100,0,0.35)' }}>
+                Passer le test gratuit <ExternalLink size={14} />
+              </a>
+            </div>
+          </FI>
+          <FI delay={0.2}>
+            <div className="rounded-2xl p-8 flex flex-col gap-5 h-full bg-white shadow-md border border-gray-100">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#3a0950' }}>
+                <Users size={22} className="text-white" />
+              </div>
+              <div>
+                <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: '#FF6400' }}>Communauté gratuite</p>
+                <h3 className="font-black text-[#1a1a1a] text-xl mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>Juge-nous avant d'investir.</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">On ne te demande pas de nous croire sur parole. Accède aux extraits de formations, au test psychométrique et à la communauté — gratuitement. Ensuite, tu décides.</p>
+              </div>
+              {['Extraits réels de formations', 'Test psychométrique inclus', 'Échanges avec apprenants actifs', 'Sessions live mensuelles'].map(p => (
+                <div key={p} className="flex items-center gap-2.5">
+                  <CheckCircle2 size={14} style={{ color: '#FF6400' }} className="flex-shrink-0" />
+                  <span className="text-gray-600 text-sm">{p}</span>
+                </div>
+              ))}
+              <a href="https://community.business-entrepreneur.com" target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 text-white font-bold text-sm py-3.5 px-6 rounded-xl mt-auto transition-all hover:opacity-90"
+                style={{ backgroundColor: '#1a1a1a' }}>
+                Rejoindre le club gratuit <ArrowRight size={14} />
+              </a>
+            </div>
+          </FI>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Selection() {
+  return (
+    <section className="py-28 text-center" style={{ backgroundColor: '#0c0118' }}>
+      <div className="max-w-3xl mx-auto px-5">
+        <FI>
+          <p className="text-sm font-medium mb-6" style={{ color: 'rgba(255,255,255,0.28)' }}>Avant de postuler, lisez ceci.</p>
+          <h2 className="font-black text-white leading-tight mb-5" style={{ fontSize: 'clamp(1.9rem, 4.5vw, 3.2rem)', fontFamily: 'Montserrat, sans-serif' }}>
+            BE n'est pas pour tout le monde.
+          </h2>
+          <p className="leading-relaxed mb-8 text-lg" style={{ color: 'rgba(255,255,255,0.52)' }}>
+            Nous refusons les profils passifs, les opportunistes et ceux qui cherchent de l'argent rapide sans engagement réel. Si vous voulez une formation easy où l'on vous tient la main sans effort de votre part — BE n'est pas pour vous.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
+            {['✗ Passifs', '✗ Opportunistes', '✗ Sans engagement'].map(t => (
+              <span key={t} className="text-sm px-4 py-2 rounded-full" style={{ border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.38)' }}>{t}</span>
+            ))}
+          </div>
+          <div className="pt-8" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            <p className="font-black text-lg mb-2" style={{ color: '#FF6400', fontFamily: 'Montserrat, sans-serif' }}>
+              La sélection n'est pas un filtre. C'est la marque.
+            </p>
+            <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Si vous êtes ambitieux, discipliné, et prêt à vous transformer — vous êtes exactement là où vous devez être.
+            </p>
+            <a href="https://calendly.com/business-entrepreneur/appel-accompagnement-perso" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-xl text-sm transition-all hover:-translate-y-px"
+              style={{ backgroundColor: '#FF6400', boxShadow: '0 8px 28px rgba(255,100,0,0.45)', fontFamily: 'Montserrat, sans-serif' }}>
+              Je veux rejoindre Business Entrepreneur →
+            </a>
+          </div>
+        </FI>
+      </div>
+    </section>
+  )
+}
+
+function FinalCTA() {
+  return (
+    <section className="py-24" style={{ background: 'linear-gradient(135deg, #3a0950, #1a0530)' }}>
+      <div className="max-w-4xl mx-auto px-5 text-center">
+        <FI>
+          <h2 className="font-black text-white leading-tight mb-4"
+            style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontFamily: 'Montserrat, sans-serif' }}>
+            Vous avez le profil.{' '}
+            <span style={{ color: '#FF6400' }}>Prouvez-le.</span>
+          </h2>
+          <p className="text-lg mb-9 max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.52)' }}>
+            Rejoignez +10 000 profils ambitieux qui ont choisi de piloter leur carrière plutôt que de la subir.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <a href="https://calendly.com/business-entrepreneur/appel-accompagnement-perso" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 text-white font-bold px-8 py-4 rounded-xl text-sm transition-all hover:-translate-y-px"
+              style={{ backgroundColor: '#FF6400', boxShadow: '0 10px 32px rgba(255,100,0,0.48)', fontFamily: 'Montserrat, sans-serif' }}>
+              Prendre un RDV gratuit →
+            </a>
+            <a href="#formations"
+              className="flex items-center gap-2 text-white font-bold px-8 py-4 rounded-xl text-sm hover:bg-white/10 transition-all"
+              style={{ border: '2px solid rgba(255,255,255,0.22)', backgroundColor: 'rgba(255,255,255,0.05)', fontFamily: 'Montserrat, sans-serif' }}>
+              Découvrir les formations
+            </a>
+          </div>
+        </FI>
+      </div>
+    </section>
+  )
+}
+
+function Footer() {
+  return (
+    <footer style={{ backgroundColor: '#0c0118', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="max-w-6xl mx-auto px-5 py-14">
+        <div className="grid sm:grid-cols-4 gap-10 mb-12">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2.5">
+              <LogoBE size={32} />
+              <span className="font-bold text-white text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Business<br /><span style={{ color: '#FF6400' }}>Entrepreneur</span>
+              </span>
+            </div>
+            <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.3)' }}>Formez-vous. Performez. Devenez indispensable.</p>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>40 rue Alexandre Dumas, 75011 Paris</p>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>support@business-entrepreneur.fr</p>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>01 87 66 62 72</p>
+            <div className="flex gap-4 mt-1">
+              <a href="https://www.instagram.com/business.entrepreneur.hub" target="_blank" rel="noopener noreferrer" className="text-xs transition-colors" style={{ color: 'rgba(255,255,255,0.35)' }}>Instagram</a>
+              <a href="https://www.linkedin.com/company/business-entrepreneur-hub" target="_blank" rel="noopener noreferrer" className="text-xs transition-colors" style={{ color: 'rgba(255,255,255,0.35)' }}>LinkedIn</a>
+            </div>
+          </div>
+          {[
+            { title: 'Formations', links: [
+              { l: 'Traffic Manager IA', h: '#' },
+              { l: 'TikTok Shop', h: '#' },
+              { l: 'Business Developer', h: '#' },
+              { l: 'Business Analyst', h: '#' },
+            ]},
+            { title: 'Entreprise', links: [
+              { l: 'Test profil gratuit', h: 'https://www.profil-business-entrepreneur.fr/' },
+              { l: 'À propos', h: 'https://business-entrepreneur.fr/a-propos' },
+              { l: 'Blog', h: 'https://business-entrepreneur.fr/blog' },
+              { l: 'Résultats', h: 'https://business-entrepreneur.fr/resultats' },
+            ]},
+            { title: 'Légal', links: [
+              { l: 'CGV', h: '#' },
+              { l: 'Politique de confidentialité', h: '#' },
+              { l: 'Mentions légales', h: '#' },
+            ]},
+          ].map(({ title, links }) => (
+            <div key={title} className="flex flex-col gap-3">
+              <p className="text-white text-xs font-bold uppercase tracking-wide">{title}</p>
+              {links.map(({ l, h }) => (
+                <a key={l} href={h} className="text-xs transition-colors" style={{ color: 'rgba(255,255,255,0.32)' }}
+                  onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.65)'}
+                  onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.32)'}>{l}</a>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-6" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.22)' }}>
+            © 2026 Business Entrepreneur · Tous droits réservés · La référence francophone de la transformation professionnelle
+          </p>
+          <a href="https://calendly.com/business-entrepreneur/appel-accompagnement-perso" target="_blank" rel="noopener noreferrer"
+            className="text-xs font-semibold px-4 py-2 rounded-lg text-white transition-all hover:opacity-90"
+            style={{ backgroundColor: '#FF6400' }}>
+            Rejoindre BE →
+          </a>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+export default function App() {
+  return (
+    <div style={{ fontFamily: 'DM Sans, Inter, sans-serif' }}>
+      <Nav />
+      <Hero />
+      <Mission />
+      <Formations />
+      <Modele />
+      <Resultats />
+      <PontEntrepreneurial />
+      <Selection />
+      <FinalCTA />
+      <Footer />
+    </div>
+  )
+}
